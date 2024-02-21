@@ -1,4 +1,4 @@
-/* .App {
+.App {
   text-align: center;
 }
 
@@ -6,8 +6,18 @@
   height: 40vmin;
   pointer-events: none;
 }
-.headers {
-  margin: auto auto auto 10px;
+
+nav ul {
+  display: flex;
+  background-color: blanchedalmond;
+  margin-block-start: 0;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+nav ul li {
+  list-style-type: none;
+  margin-right: 16px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -38,4 +48,4 @@
   to {
     transform: rotate(360deg);
   }
-} */
+}

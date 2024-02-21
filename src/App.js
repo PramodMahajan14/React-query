@@ -1,37 +1,37 @@
 import "./App.css";
-import React, { createContext, useState } from "react";
-import "bootstrap/dist/css/bootstrap.css";
-import Tabs from "react-bootstrap/Tabs";
-import Tab from "react-bootstrap/Tab";
-import FormField from "./components/FormField";
-import ListItems from "./components/ListItems";
-import Login from "./components/Login";
-export const ItemsContext = createContext();
+
+import { Routes, Route, Link } from "react-router-dom";
+
+import HomePage from "./components/Home.Page";
+import RQSuperHeroesPage from "./components/RQSuperHeroes.page";
+import SuperHeroesPage from "./components/SuperHeroes.page";
+import RQSuperHeroPage from "./components/RQSuperHero.page";
 
 function App() {
-  const [Items, setItems] = useState([]);
   return (
-    <div className="container">
-      {/* <div className="header text-center mx-auto">
-        <h1>Todo List App</h1>
+    <>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/super-heroes">Traditional Super Heroes</Link>
+            </li>
+            <li>
+              <Link to="/rq-super-heroes">RQ Super Heroes</Link>
+            </li>
+          </ul>
+        </nav>
+        <Routes>
+          <Route path="/super-heroes" element={<SuperHeroesPage />} />
+
+          <Route path="/rq-super-heroes" element={<RQSuperHeroesPage />} />
+          <Route path="/" element={<HomePage />} />
+        </Routes>
       </div>
-      <ItemsContext.Provider value={{ Items, setItems }}>
-        <div>
-          <Tabs
-            defaultActiveKey="second"
-            style={{ fontSize: "20px", color: "ButtonHighlight" }}
-          >
-            <Tab eventKey="second" title="New">
-              <FormField />
-            </Tab>
-            <Tab eventKey="third" title="List">
-              <Login />
-            </Tab>
-          </Tabs>
-        </div>
-      </ItemsContext.Provider> */}
-      <Login />
-    </div>
+    </>
   );
 }
 
