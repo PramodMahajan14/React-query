@@ -1,20 +1,19 @@
-import React from "react";
-import { useQuery } from "react-query";
-import axios from "axios";
+import React, { useState } from "react";
 
-const fetchsuperheroes = () => {
-  return axios.get("http://localhost:4000/superheroes");
-};
+import { useSuperHeroesData } from "../Hooks/useSuperHeroesData";
+import { Link } from "react-router-dom";
+
 export default function RQSuperHeroesPage() {
-  const { isLoading, data, isError, error } = useQuery(
-    "super-heroes",
-    fetchsuperheroes,
-    {
-      cacheTime: 5000,
-    }
-  );
+  const onSuccess = (data) => {
+    console.log("perform side effect after data fetching", data);
+  };
+  const onError = (error) => {
+    console.log("perform side effect after encountering error", error);
+  };
+  const { isLoading, data, isError, error, isFetching, refetch } =
+    useSuperHeroesData(onSuccess, onError);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <h1>Loading data ...</h1>;
   }
   if (isError) {
@@ -24,10 +23,13 @@ export default function RQSuperHeroesPage() {
   return (
     <>
       <h1> RQSuperHeroesPage JQ</h1>
+      <button onClick={refetch}>Fetch data</button>
       {data?.data.map((e) => {
         return (
           <>
-            <h6 key={e.name}>{e.name}</h6>
+            <div key={e.id}>
+              <Link to={`/rq-super-heroes/${e.id}`}>{e.name}</Link>
+            </div>
           </>
         );
       })}
