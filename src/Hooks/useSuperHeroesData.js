@@ -4,14 +4,16 @@ import {
   useQueryClient,
   setQueryData,
 } from "react-query";
-import axios from "axios";
+import { request } from "../utils/axios.utils";
 
 const fetchuperheroes = () => {
-  return axios.get("http://localhost:4000/superheroes");
+  // return axios.get("http://localhost:4000/superheroes");
+  return request({ url: "/superheroes" });
 };
 
 const AddSuperHero = (hero) => {
-  return axios.post("http://localhost:4000/superheroes", hero);
+  // return axios.post("http://localhost:4000/superheroes", hero);
+  return request({ url: "/superheroes", method: "post", data: hero });
 };
 
 export const useSuperHeroesData = (onSuccess, onError) => {
@@ -42,15 +44,41 @@ export const AddSuperHeroData = (onSuccess, onError) => {
       /** Query Invalidation Start */
       // queryClient.invalidateQueries('super-heroes')
       /** Query Invalidation End */
+      /** Handling Mutation Response Start */
+      // queryClient.setQueryData("super-heroes", (oldQueryData) => {
+      //   return {
+      //     ...oldQueryData,
+      //     data: [...oldQueryData.data, data.data],
+      //   };
+      // });
+      /** Handling Mutation Response Start */
+    },
 
-      /** Handling Mutation Response Start */
-      queryClient.setQueryData("super-heroes", (oldQueryData) => {
-        return {
-          ...oldQueryData,
-          data: [...oldQueryData.data, data.data],
-        };
-      });
-      /** Handling Mutation Response Start */
+    onMutate: async (newhero) => {
+      await queryClient.cancelQueries("super-hero");
+      const previousHerodata = queryClient.setQueryData(
+        "super-heroes",
+        (oldQueryData) => {
+          return {
+            ...oldQueryData,
+            data: [
+              ...oldQueryData.data,
+              { id: oldQueryData?.data?.length + 1, ...newhero },
+            ],
+          };
+        }
+      );
+      return {
+        previousHerodata,
+      };
+    },
+
+    onError: (_error, _hero, context) => {
+      queryClient.setQueryData("super-heroes", context.previousHerodata);
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries("super-heroes");
     },
   });
 };
