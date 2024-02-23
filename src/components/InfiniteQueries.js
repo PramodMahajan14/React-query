@@ -1,54 +1,61 @@
-import React, { useState } from "react";
-import { useQuery, useInfiniteQuery } from "react-query";
+import { Fragment } from "react";
+import { useInfiniteQuery } from "react-query";
 import axios from "axios";
 
-const fetchColors = ({ pageNumber = 1 }) => {
-  return axios.get(`http://localhost:4000/colors?_limit=2&_page=${pageNumber}`);
+const fetchColors = ({ pageParam = 1 }) => {
+  return axios.get(`http://localhost:4000/colors?_limit=2&_page=${pageParam}`);
 };
-export default function InfiniteQueries() {
-  const [pageNumber, setpageNumber] = useState(1);
-  const { isLoading, data, isError, error, isFetching } = useInfiniteQuery(
-    ["colors", pageNumber],
-    () => fetchColors(pageNumber)
-  );
+
+const InfiniteQueries = () => {
+  const {
+    isLoading,
+    isError,
+    error,
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery(["colors"], fetchColors, {
+    getNextPageParam: (_lastPage, pages) => {
+      if (pages.length < 4) {
+        return pages.length + 1;
+      } else {
+        return undefined;
+      }
+    },
+  });
 
   if (isLoading) {
-    return <h1>Loading data ...</h1>;
+    return <h2>Loading...</h2>;
   }
+
   if (isError) {
-    return <h1>{error.message}</h1>;
+    return <h2>{error.message}</h2>;
   }
+
   return (
-    <div>
-      <h1>infiniteQueriesFetching</h1>
+    <>
       <div>
-        {data?.data.map((color) => {
+        {data?.pages.map((group, i) => {
           return (
-            <>
-              <div key={color.id}>
-                <h6>
+            <Fragment key={i}>
+              {group.data.map((color) => (
+                <h2 key={color.id}>
                   {color.id} {color.label}
-                </h6>
-              </div>
-            </>
+                </h2>
+              ))}
+            </Fragment>
           );
         })}
       </div>
-      {/* <div>
-        <button
-          onClick={() => setpageNumber((page) => page - 1)}
-          disabled={pageNumber === 1}
-        >
-          Previous Page
-        </button>
-        <button
-          onClick={() => setpageNumber((page) => page + 1)}
-          disabled={pageNumber === 4}
-        >
-          Next Page
+      <div>
+        <button onClick={() => fetchNextPage()} disabled={!hasNextPage}>
+          Load more
         </button>
       </div>
-      {isFetching && "Loading"} */}
-    </div>
+      <div>{isFetching && !isFetchingNextPage ? "Fetching..." : null}</div>
+    </>
   );
-}
+};
+export default InfiniteQueries;
